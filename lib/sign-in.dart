@@ -14,10 +14,10 @@ Future<String> signInWithGoogle() async {
   await Firebase.initializeApp();
 
   final GoogleSignInAccount googleSignInAccount =
-  await googleSignIn.signIn(); //holds users data and id
+      await googleSignIn.signIn(); //holds users data and id
   final GoogleSignInAuthentication googleSignInAuthentication =
-  await googleSignInAccount
-      .authentication; //holds authentication after sign in
+      await googleSignInAccount
+          .authentication; //holds authentication after sign in
 
   final AuthCredential credential = GoogleAuthProvider.credential(
     accessToken: googleSignInAuthentication
@@ -27,7 +27,7 @@ Future<String> signInWithGoogle() async {
   );
 
   final UserCredential authResult =
-  await _auth.signInWithCredential(credential);
+      await _auth.signInWithCredential(credential);
 
   final User user = authResult.user;
 
@@ -39,11 +39,12 @@ Future<String> signInWithGoogle() async {
     assert(await user.getIdToken() != null);
 
     name = user.displayName;
+    email = user.email;
+    imageUrl = user.photoURL;
+
     if (name.contains(" ")) {
       name = name.substring(0, name.indexOf(" "));
     }
-    email = user.email;
-    imageUrl = user.photoURL;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('email', email);
@@ -60,6 +61,8 @@ Future<String> signInWithGoogle() async {
 }
 
 Future<void> signOutGoogle() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.clear();
   await googleSignIn.signOut();
   print("User Signed Out");
 }

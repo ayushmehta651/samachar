@@ -33,10 +33,10 @@ class _LogInScreenState extends State<LogInScreen> {
                             0.9
                           ],
                           colors: [
-                            Colors.orange[800],
-                            Colors.orange[600],
-                            Colors.orange[400],
-                            Colors.orange[200]
+                            Colors.blue[800],
+                            Colors.blue[600],
+                            Colors.blue[400],
+                            Colors.blue[200]
                           ]),
                     )),
               ),
@@ -57,6 +57,7 @@ class _LogInScreenState extends State<LogInScreen> {
       onPressed: () {
         signInWithGoogle().then((result) {
           if (result != null) {
+
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {

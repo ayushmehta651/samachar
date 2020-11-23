@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:samachar/Blocks/news.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:samachar/Database/sql.dart';
 import 'package:samachar/model/article_model.dart';
 import 'package:samachar/screens/webScreen.dart';
+import 'package:samachar/sign-in.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -12,8 +14,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  List<Article> savedArticles;
+  DatabaseHelper _dbHelper;
   List<Article> articles;
   bool waiting = true;
+  Article _article = Article();
 
   //Called only once in the lifecycle
   void initState() {
@@ -32,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
     await newsInstance.getNews();
     articles = newsInstance.news;
     setState(() {
+      _dbHelper = DatabaseHelper.instance;
+      print('************  DATABASE CONNECTED  *************');
       waiting = false;
     });
   }
@@ -39,6 +47,32 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          CircleAvatar(
+              backgroundImage: NetworkImage(
+                imageUrl,
+              )
+          )
+        ],
+        backgroundColor: Colors.black,
+        elevation: 0.0,
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 75.0),
+              child: Text(
+                "News",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Text(
+              "App",
+              style: TextStyle(color: Colors.blue),
+            )
+          ],
+        ),
+      ),
       body: (waiting)
           ? Center(
         child: CircularProgressIndicator(),
@@ -77,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 5.0),
                           child: Text(articles[index].source,
+                              maxLines: 2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.grey[700])),
@@ -142,14 +177,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               )),
                           Row(children: [
-                            Icon(Icons.share, color: Colors.blue),
+                            Icon(Icons.share, color: Colors.blue,size : 30.0),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 16.0, right: 14.0),
-                              child: Icon(Icons.bookmark,
-                                  color: Colors.blue),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _article.title = articles[index].title;
+                                    _article.articleUrl =
+                                        articles[index].articleUrl;
+                                    _article.content = articles[index].content;
+                                    _article.description =
+                                        articles[index].description;
+                                    _article.source = articles[index].source;
+                                  });
+                                  _savedArticle();
+                                },
+                                child: Icon(Icons.bookmark,
+                                    color: Colors.blue,
+                                  size : 30.0,
+
+                                ),
+                              ),
                             ),
-                            Icon(Icons.not_interested, color: Colors.blue)
                           ])
                         ])
                       ],
@@ -162,5 +213,18 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  _refreshArticleList() async {
+    List<Article> x = await _dbHelper.fetchArticles();
+    setState(() {
+      savedArticles = x;
+    });
+  }
+
+  _savedArticle() async {
+    await _dbHelper.insertArticle(_article);
+    print(_article.title);
+    _refreshArticleList();
   }
 }
