@@ -12,6 +12,29 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0.0,
+        title: Padding(
+          padding: const EdgeInsets.only(left : 45.0),
+          child: Row(
+
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 75.0),
+                child: Text(
+                  "News",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              Text(
+                "App",
+                style: TextStyle(color: Colors.blue),
+              )
+            ],
+          ),
+        ),
+      ),
       body: GridView.count(crossAxisCount: 2, children: [
         Padding(
           padding: const EdgeInsets.only(top: 40.0),

@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   final String email;
 
   MyApp(this.email);
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

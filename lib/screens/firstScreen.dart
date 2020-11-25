@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:samachar/screens/HomeScreen.dart';
 import 'package:samachar/screens/exploreScreen.dart';
 import 'package:samachar/screens/savedScreen.dart';
+import 'package:samachar/screens/userDetails.dart';
 
 class FirstScreen extends StatefulWidget {
   FirstScreen({Key key}) : super(key: key);
@@ -20,8 +21,10 @@ class _FirstScreenState extends State<FirstScreen> {
     ExploreScreen(
         key: PageStorageKey('Page 2'),
     ),
-
     SavedScreen(
+      key : PageStorageKey('Page 3'),
+    ),
+    UserDetails(
       key : PageStorageKey('Page 3'),
     )
 
@@ -48,6 +51,9 @@ class _FirstScreenState extends State<FirstScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.bookmark, color: Colors.black, size: 30),
               label: 'Saved Post'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle, color: Colors.black, size: 30),
+              label: 'Account'),
         ],
         onTap: (index) {
           if (mounted) {

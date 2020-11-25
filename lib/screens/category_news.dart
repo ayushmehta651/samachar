@@ -41,30 +41,23 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: Icon(
-                Icons.account_circle,
-                size: 35,
-              ))
-        ],
+        centerTitle: true,
         backgroundColor: Colors.black,
         elevation: 0.0,
-        title: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 75.0),
-              child: Text(
+        title: Padding(
+          padding: const EdgeInsets.only(left : 20.0),
+          child: Row(
+            children: [
+              Text(
                 "News",
                 style: TextStyle(color: Colors.white),
               ),
-            ),
-            Text(
-              "App",
-              style: TextStyle(color: Colors.blue),
-            )
-          ],
+              Text(
+                "App",
+                style: TextStyle(color: Colors.blue),
+              )
+            ],
+          ),
         ),
       ),
       body: (waiting)
@@ -80,7 +73,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                WebScreen(data: categories[index].articleUrl)));
+                                WebScreen(data: categories[index].url)));
                   },
                   child: Card(
                     elevation: 1.25,
@@ -163,7 +156,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                       height: 100.0,
                                       width: 100.0,
                                       child: CachedNetworkImage(
-                                        imageUrl: categories[index].urlToImage,
+                                        imageUrl: categories[index].urlToImg,
                                         placeholder: (context, url) =>
                                             CircularProgressIndicator(),
                                         errorWidget: (context, url, error) =>

@@ -19,10 +19,10 @@ class News {
           Article article = Article(
             title: element["title"],
             description: element["description"],
-            urlToImage: element["urlToImage"],
+            urlToImg: element["urlToImage"],
             publishedAt: DateTime.parse(element['publishedAt']),
             content: element["content"],
-            articleUrl: element["url"],
+            url: element["url"],
             source: element["source"]["name"],
           );
 
@@ -49,10 +49,10 @@ class CategoryNews {
           Article article = Article(
             title: element["title"],
             description: element["description"],
-            urlToImage: element["urlToImage"],
+            urlToImg: element["urlToImage"],
             publishedAt: DateTime.parse(element['publishedAt']),
             content: element["content"],
-            articleUrl: element["url"],
+            url: element["url"],
             source: element["source"]["name"],
           );
           news.add(article);
