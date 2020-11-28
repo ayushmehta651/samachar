@@ -11,25 +11,6 @@ class WebScreen extends StatelessWidget {
     final Completer<WebViewController> _controller =
     Completer<WebViewController>();
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0.0,
-        title: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 75.0),
-              child: Text(
-                "News",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            Text(
-              "App",
-              style: TextStyle(color: Colors.blue),
-            )
-          ],
-        ),
-      ),
       body: WebView(
         debuggingEnabled: false,
         gestureNavigationEnabled: false,

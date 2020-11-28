@@ -19,15 +19,14 @@ class _FirstScreenState extends State<FirstScreen> {
       key: PageStorageKey('Page 1'),
     ),
     ExploreScreen(
-        key: PageStorageKey('Page 2'),
+      key: PageStorageKey('Page 2'),
     ),
     SavedScreen(
-      key : PageStorageKey('Page 3'),
+      key: PageStorageKey('Page 3'),
     ),
     UserDetails(
-      key : PageStorageKey('Page 3'),
+      key: PageStorageKey('Page 3'),
     )
-
   ];
 
   final PageStorageBucket bucket = PageStorageBucket();
@@ -35,6 +34,30 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.black,
+        elevation: 0.0,
+        leading: Icon(
+          Icons.tab_outlined,
+          color: Colors.black,
+        ),
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 75),
+              child: Text(
+                "News",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Text(
+              "App",
+              style: TextStyle(color: Colors.blue),
+            )
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         selectedItemColor: Colors.orange,

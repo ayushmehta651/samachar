@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:samachar/screens/webScreen.dart';
 import 'package:samachar/Blocks/news.dart';
+import 'package:samachar/services/crud.dart';
+import 'package:share/share.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String cat;
@@ -14,7 +16,17 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   var categories;
+  CrudMethods crudMethods = new CrudMethods();
   bool waiting = true;
+  var articles;
+  String title;
+  String description;
+  String urlToImg;
+  var publishedAt;
+  String content;
+  String url;
+  String source;
+  Set saved = Set();
 
   //Called only once in the lifecycle
   void initState() {
@@ -44,20 +56,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
         centerTitle: true,
         backgroundColor: Colors.black,
         elevation: 0.0,
-        title: Padding(
-          padding: const EdgeInsets.only(left : 20.0),
-          child: Row(
-            children: [
-              Text(
+        leading: Icon(
+          Icons.tab_outlined,
+          color: Colors.black,
+        ),
+        title: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 75),
+              child: Text(
                 "News",
                 style: TextStyle(color: Colors.white),
               ),
-              Text(
-                "App",
-                style: TextStyle(color: Colors.blue),
-              )
-            ],
-          ),
+            ),
+            Text(
+              "App",
+              style: TextStyle(color: Colors.blue),
+            )
+          ],
         ),
       ),
       body: (waiting)
@@ -164,13 +180,67 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                       ),
                                     )),
                                 Row(children: [
-                                  Icon(Icons.share, color: Colors.blue),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16.0, right: 14.0),
-                                    child: Icon(Icons.bookmark,
-                                        color: Colors.blue),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.share,
+                                      size: 30.0,
+                                    ),
+                                    onPressed: () async {
+                                      Share.share(categories[index].url,
+                                          subject:
+                                              'Be updated with the latest news!!');
+                                    },
                                   ),
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 16.0, right: 16.0),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            title = (categories[index].title ==
+                                                    null)
+                                                ? "  "
+                                                : categories[index].title;
+                                            url =
+                                                (categories[index].url == null)
+                                                    ? "  "
+                                                    : categories[index].url;
+                                            source =
+                                                (categories[index].source ==
+                                                        null)
+                                                    ? "  "
+                                                    : categories[index].source;
+                                            content =
+                                                (categories[index].content ==
+                                                        null)
+                                                    ? "  "
+                                                    : categories[index].content;
+                                            urlToImg = (categories[index]
+                                                        .urlToImg ==
+                                                    null)
+                                                ? "  "
+                                                : categories[index].urlToImg;
+                                            description = (categories[index]
+                                                        .description ==
+                                                    null)
+                                                ? "  "
+                                                : categories[index].description;
+                                          });
+                                          (saved.contains(
+                                                  categories[index].title))
+                                              ? _showSnackBar()
+                                              : _saveNews();
+
+                                          saved.add(articles[index].title);
+                                          print(saved);
+                                        },
+                                        icon: saved.contains(
+                                                categories[index].title)
+                                            ? Icon(Icons.bookmark_outlined)
+                                            : Icon(Icons
+                                                .bookmark_outline_outlined),
+                                        iconSize: 35.0,
+                                      )),
                                 ])
                               ])
                             ],
@@ -183,5 +253,46 @@ class _CategoryScreenState extends State<CategoryScreen> {
               },
             ),
     );
+  }
+
+  _showSnackBar() {
+    saved.remove(title);
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.thumb_down),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: Text('Article Already saved'),
+          ),
+        ],
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  _saveNews() async {
+    Map<String, dynamic> newsMap = {
+      "title": title,
+      "description": description,
+      "urlToImg": urlToImg,
+      "content": content,
+      "url": url,
+      "source": source
+    };
+    crudMethods.addNews(newsMap).then((result) {
+      final snackBar = SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.thumb_up),
+            Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: Text('Article saved'),
+            ),
+          ],
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 }

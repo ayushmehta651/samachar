@@ -15,18 +15,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool present = false;
   CrudMethods crudMethods = new CrudMethods();
   bool waiting = true;
   var articles;
   String title;
   String description;
   String urlToImg;
-  var publishedAt;
   String content;
   String url;
   String source;
-  List saved = [];
+  Set saved = Set();
 
   @override
   void initState() {
@@ -38,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
+    getSaved();
   }
 
   getSaved() {
@@ -63,28 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          elevation: 0.0,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 50.0),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 75.0),
-                  child: Text(
-                    "News",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Text(
-                  "App",
-                  style: TextStyle(color: Colors.blue),
-                )
-              ],
-            ),
-          ),
-        ),
         body: (waiting)
             ? Center(child: CircularProgressIndicator())
             : ListView.builder(
@@ -173,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       IconButton(
                                         icon: Icon(
                                           Icons.share,
-                                          size: 35.0,
+                                          size: 30.0,
                                         ),
                                         onPressed: () async {
                                           Share.share(articles[index].url,
@@ -220,17 +197,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                               });
                                               (saved.contains(
                                                       articles[index].title))
-                                                  ? print("Already present!!!")
+                                                  ? _showSnackBar()
                                                   : _saveNews();
+
+                                              saved.add(articles[index].title);
+                                              print(saved);
                                             },
-                                            icon: Icon(
-                                              (saved.contains(
-                                                      articles[index].title))
-                                                  ? Icons.bookmark_outlined
-                                                  : Icons
-                                                      .bookmark_outline_outlined,
-                                              size: 35,
-                                            ),
+                                            icon: saved.contains(
+                                                    articles[index].title)
+                                                ? Icon(Icons.bookmark_outlined)
+                                                : Icon(Icons
+                                                    .bookmark_outline_outlined),
+                                            iconSize: 35.0,
                                           )),
                                     ])
                                   ])
@@ -243,6 +221,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 }));
+  }
+
+  _showSnackBar() {
+    saved.remove(title);
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.thumb_down),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: Text('Article Already saved'),
+          ),
+        ],
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   _saveNews() async {

@@ -21,7 +21,7 @@ class _LogInScreenState extends State<LogInScreen> {
               ClipPath(
                 clipper: CustomShapeClipper(),
                 child: Container(
-                    height: 600,
+                    height: 490,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                           begin: Alignment.topRight,
@@ -33,17 +33,14 @@ class _LogInScreenState extends State<LogInScreen> {
                             0.9
                           ],
                           colors: [
-                            Colors.blue[800],
-                            Colors.blue[600],
-                            Colors.blue[400],
-                            Colors.blue[200]
+                            Colors.cyan[800],
+                            Colors.cyan[600],
+                            Colors.cyan[400],
+                            Colors.cyan[300]
                           ]),
                     )),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 0.0, bottom: 20.0),
-                child: _signInButton(),
-              ),
+              Center(child: _signInButton()),
             ],
           ),
         ),
@@ -57,8 +54,8 @@ class _LogInScreenState extends State<LogInScreen> {
       onPressed: () {
         signInWithGoogle().then((result) {
           if (result != null) {
-
-            Navigator.of(context).push(
+            //Navigator.pop(context);
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) {
                   return FirstScreen();

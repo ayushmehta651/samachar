@@ -14,44 +14,43 @@ class SavedScreen extends StatefulWidget {
 }
 
 class _SavedScreenState extends State<SavedScreen> {
-  CrudMethods crudMethods = new CrudMethods();
+  CrudMethods crudMethods = CrudMethods();
   Stream newsStreams;
-  bool waiting=false;
+  bool waiting = false;
   Widget newsList() {
     return Container(
         child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection("save").snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.data == null)
-                      return Center(child: CircularProgressIndicator());
-                    return Container(
-                        child: ListView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 13),
-                          itemCount: snapshot.data.docs.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return NewsTile(
-                               urlToImg:
-                                   snapshot.data.docs[index].data()['urlToImg'],
-                                description:
-                                snapshot.data.docs[index].data()['description'],
-                                title: snapshot.data.docs[index].data()['title'],
-                                source: snapshot.data.docs[index].data()['source'],
-                                url: snapshot.data.docs[index].data()['url'],
-                                content: snapshot.data.docs[index].data()['content']);
-                          },
-                        ),
-                      );
-                  },
-                ),
-              ),
-            )
-          ],
-        ));
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance.collection("save").snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.data == null)
+                  return Center(child: CircularProgressIndicator());
+                return Container(
+                  child: ListView.builder(
+                    itemCount: snapshot.data.docs.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return NewsTile(
+                          urlToImg:
+                              snapshot.data.docs[index].data()['urlToImg'],
+                          description:
+                              snapshot.data.docs[index].data()['description'],
+                          title: snapshot.data.docs[index].data()['title'],
+                          source: snapshot.data.docs[index].data()['source'],
+                          url: snapshot.data.docs[index].data()['url'],
+                          content: snapshot.data.docs[index].data()['content']);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        )
+      ],
+    ));
   }
 
   @override
@@ -63,54 +62,48 @@ class _SavedScreenState extends State<SavedScreen> {
     super.initState();
   }
 
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black,
-          elevation: 0.0,
-          title: Padding(
-            padding: const EdgeInsets.only(left : 45.0),
-            child: Row(
-
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 75.0),
-                  child: Text(
-                    "News",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Text(
-                  "App",
-                  style: TextStyle(color: Colors.blue),
-                )
-              ],
-            ),
-          ),
-        ),
-        body: newsList());
+    return Scaffold(body: newsList());
   }
 }
 
 class NewsTile extends StatelessWidget {
+  CrudMethods _crudMethods = CrudMethods();
   final String urlToImg, description, title, source, url, content;
   NewsTile(
       {@required this.urlToImg,
-        @required this.description,
-        @required this.title,
-        @required this.source,
-        @required this.url,
-        @required this.content});
+      @required this.description,
+      @required this.title,
+      @required this.source,
+      @required this.url,
+      @required this.content});
+
+  deleteArticle() {
+    FirebaseFirestore.instance
+        .collection("save")
+        .snapshots()
+        .listen((snapshot) {
+      snapshot.docs.forEach((doc) {
+        if (title == doc.data()['title']) {
+          _crudMethods.deleteArticle(doc.id);
+          print('Deleted');
+          return;
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    WebScreen(data: url)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => WebScreen(data: url)));
       },
       child: Padding(
         padding: const EdgeInsets.all(1.0),
@@ -137,20 +130,14 @@ class NewsTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                                (title == null)
-                                    ? "Loading..."
-                                    : title,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                            Text((title == null) ? "Loading..." : title,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             Padding(
                               padding: const EdgeInsets.all(7.0),
                               child: Text(
-                                (description ==
-                                    null)
+                                (description == null)
                                     ? "Loading..."
                                     : description,
                                 style: TextStyle(
@@ -161,44 +148,36 @@ class NewsTile extends StatelessWidget {
                           ]),
                     ),
                     Column(children: [
-                       SizedBox(
-                           height: 100,
-                           width: 100,
-                           child: CachedNetworkImage(
-                             imageUrl: urlToImg,
-                             placeholder: (context, url) =>
-                                 CircularProgressIndicator(),
-                             errorWidget: (context, url, error) =>
-                                 Icon(Icons.error),
-                             fit: BoxFit.cover,
-                           )),
+                      SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: CachedNetworkImage(
+                            imageUrl: urlToImg,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            fit: BoxFit.cover,
+                          )),
                       Padding(
-                        padding: const EdgeInsets.only(top:8.0),
+                        padding: const EdgeInsets.only(top: 8.0),
                         child: Row(children: [
                           IconButton(
-                            icon : Icon(
-                                Icons.share
-                            ),
-                            onPressed: () async{
+                            icon: Icon(Icons.share),
+                            onPressed: () async {
                               Share.share(url,
-                                  subject: 'Be updated with the latest news!!'
-                              );
+                                  subject: 'Be updated with the latest news!!');
                             },
                           ),
-//                          Padding(
-//                            padding: const EdgeInsets.only(left : 8.0),
-//                            child: IconButton(
-//                              icon : Icon(
-//                                  Icons.delete_sweep
-//                              ),
-//                              onPressed: () async{
-//                                await FirebaseFirestore.instance.runTransaction((Transaction myTransaction) async {
-//                                  await myTransaction.delete(snapshot.data.documents[0].reference);
-//                                });
-//                                );
-//                              },
-//                            ),
-//                          ),
+                          SizedBox(height: 8),
+                          GestureDetector(
+                              onTap: () {
+                                deleteArticle();
+                              },
+                              child: Icon(
+                                Icons.delete_sweep,
+                                size: 35.0,
+                              ))
                         ]),
                       )
                     ])
