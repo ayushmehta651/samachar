@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:samachar/Blocks/news.dart';
-import 'package:samachar/screens/webScreen.dart';
-import 'package:samachar/services/crud.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share/share.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Blocks/news.dart';
+import '../services/crud.dart';
+import 'webScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -21,32 +21,35 @@ class _HomeScreenState extends State<HomeScreen> {
   String title;
   String description;
   String urlToImg;
+  var publishedAt;
   String content;
   String url;
   String source;
-  Set saved = Set();
-
+  List saved = [];
   @override
   void initState() {
     super.initState();
+    print("check");
     getNews();
     getSaved();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    getSaved();
-  }
-
   getSaved() {
+    List x = [];
     FirebaseFirestore.instance
         .collection("save")
-        .snapshots()
-        .listen((snapshot) {
-      snapshot.docs.forEach((doc) {
-        saved.add(doc.data()['title']);
+        .where("uid")
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((element) {
+        print(element["title"]);
+
+        x.add(element["title"]);
       });
+    });
+
+    setState(() {
+      saved = x;
     });
   }
 
@@ -201,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   : _saveNews();
 
                                               saved.add(articles[index].title);
-                                              print(saved);
+                                              // print(saved);
                                             },
                                             icon: saved.contains(
                                                     articles[index].title)
@@ -224,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _showSnackBar() {
-    saved.remove(title);
     final snackBar = SnackBar(
       content: Row(
         children: [
@@ -240,15 +242,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _saveNews() async {
-    Map<String, dynamic> newsMap = {
-      "title": title,
-      "description": description,
-      "urlToImg": urlToImg,
-      "content": content,
-      "url": url,
-      "source": source
-    };
-    crudMethods.addNews(newsMap).then((result) {
+    crudMethods
+        .addNews(title, description, content, urlToImg, url, source)
+        .then((result) {
       final snackBar = SnackBar(
         content: Row(
           children: [
